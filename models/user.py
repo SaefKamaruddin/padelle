@@ -35,7 +35,8 @@ class User(BaseModel):
 # create with unique username
 # Password with restrictions at least 6 chars with one special char, one upper and one lower
 
-    def validate_email(self):
+
+    def validate(self):
         existing_email = User.get_or_none(email=self.email)
         existing_username = User.get_or_none(username=self.username)
 
@@ -60,5 +61,5 @@ class User(BaseModel):
         if not has_special(self.password):
             self.errors.append(
                 "Passwords needs at least one special character")
-        
-        self.password=generate_password_hash(self.password)
+
+        self.password = generate_password_hash(self.password)
