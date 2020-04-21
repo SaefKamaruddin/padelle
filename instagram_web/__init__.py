@@ -19,4 +19,4 @@ def internal_server_error(e):
 
 @app.route("/")
 def homepage():
-    return render_template('homepage.html')
+    return render_template('home.html')

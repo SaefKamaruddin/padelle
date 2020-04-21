@@ -57,7 +57,7 @@ class User(BaseModel):
             self.errors.append(
                 "Passwords needs at least one uppercase character")
 
-         if not has_special(self.password):
+        if not has_special(self.password):
             self.errors.append(
                 "Passwords needs at least one special character")
         
