@@ -21,7 +21,7 @@ def create():
     if len(user.errors) > 0:
         return render_template('users/new.html', errors=user.errors)
     else:
-        return redirect(url_for("homepage"))
+        return redirect(url_for("home"))
 
     # if login succeeds, to be changed
 
