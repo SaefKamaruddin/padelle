@@ -57,15 +57,20 @@ def sign_up():
         return jsonify({"message": "Some error happened", "status": "Failed"})
 ####################
 
-
+# api for user log in
 @users_api_blueprint.route('/login', methods=['POST'])
+@csrf.exempt
 def login():
-    auth = request.authorization
+    user_login = request.get_json()
+    print(user_login)
+    user = User.get_or_none(User.username == user_login['username'])
 
-    if not auth or not auth.username or not auth.password:
-        return make_response('Could not verify', 401, {"WWW-Authenticate": 'Basic realm="login reuired!"'})
+    if user:
+        check_password = user_login['password']
+        hashed_password = user.password
+        result = check_password_hash(hashed_password, check_password)
 
-    user = User.query.filter_by(username=auth.username).first()
-
-    if not user:
-        return make_response('Could not verify', 401, {"WWW-Authenticate": 'Basic realm="login reuired!"'})
+        if result:
+            access_token = create_access_token(identity=user.id)
+            return jsonify({"auth_token": access_token, "message": "Login Success", "status": "Success", "user": {"id": user.id, "username": user.username, "email": user.email}})
+    return jsonify({"message": "Some error occur", "status": "failed"})
