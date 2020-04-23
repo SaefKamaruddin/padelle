@@ -1,12 +1,12 @@
-{% extends "_layout.html" %}
-
-{% block title %}
-  Homepage
-{% endblock %}
-
-{% block header %}
-{% endblock %}
-
-{% block content %}
-  <h1>Homepage</h1>
+{% extends "_layout.html" %} {% block title %} Homepage {% endblock %} {% block
+header %} {% endblock %} {% block content %}
+<h1>Homepage</h1>
+<form
+  action="{{url_for ('items_api.upload')}}"
+  method="POST"
+  enctype="multipart/form-data"
+>
+  <input type="file" name="img" />
+  <input type="submit" value="Upload" />
+</form>
 {% endblock %}
