@@ -38,23 +38,23 @@ def sign_up():
     email_check = User.get_or_none(User.email == email_input)
 
     if username_input == "" or password_input == "" or email_input == "":
-        return jsonify({'message': 'All fields required', 'status': 'failed'})
+        return jsonify({'message': 'All fields required', 'status': 'failed'}), 400
 
     elif username_check:
-        return jsonify({"message": ["username is already in use"], "status": "failed"})
+        return jsonify({"message": ["username is already in use"], "status": "failed"}), 400
 
     elif email_check:
-        return jsonify({"message": ["Email is already in use"], "status": "failed"})
+        return jsonify({"message": ["Email is already in use"], "status": "failed"}), 400
 
     elif user.save():
         access_token = create_access_token(identity=username_input)
 
         registered_user = User.get(User.username == username_input)
         print(registered_user)
-        return jsonify({"auth_token": access_token, "message": "Successfully created a user and signed in.", "status": "Success", "user": {"id": registered_user.id, "username": registered_user.username}})
+        return jsonify({"auth_token": access_token, "message": "Successfully created a user and signed in.", "status": "Success", "user": {"id": registered_user.id, "username": registered_user.username}}), 200
 
     else:
-        return jsonify({"message": "Some error happened", "status": "Failed"})
+        return jsonify({"message": "Some error happened", "status": "Failed"}), 400
 ####################
 
 # api for user log in
@@ -72,5 +72,5 @@ def login():
 
         if result:
             access_token = create_access_token(identity=user.id)
-            return jsonify({"auth_token": access_token, "message": "Login Success", "status": "Success", "user": {"id": user.id, "username": user.username, "email": user.email}})
+            return jsonify({"auth_token": access_token, "message": "Login Success", "status": "Success", "user": {"id": user.id, "username": user.username, "email": user.email}}), 200
     return jsonify({"message": "Some error occur", "status": "failed"})
