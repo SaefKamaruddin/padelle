@@ -27,7 +27,6 @@ def get_one_User(id):
 def sign_up():
     data = request.get_json()
     print(data)
-    hashed_password = generate_password_hash(data['password'])
     username_input = data['username']
     email_input = data['email']
     password_input = data['password']
@@ -51,7 +50,7 @@ def sign_up():
 
         registered_user = User.get(User.username == username_input)
         print(registered_user)
-        return jsonify({"auth_token": access_token, "message": "Successfully created a user and signed in.", "status": "Success", "user": {"id": registered_user.id, "username": registered_user.username}}), 200
+        return jsonify({"auth_token": access_token, "message": "Successfully created a user and signed in.", "status": "Success", "user": {"id": registered_user.id, "username": registered_user.username, "Admin_status": registered_user.isAdmin}}), 200
 
     else:
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400
@@ -72,5 +71,5 @@ def login():
 
         if result:
             access_token = create_access_token(identity=user.id)
-            return jsonify({"auth_token": access_token, "message": "Login Success", "status": "Success", "user": {"id": user.id, "username": user.username, "email": user.email}}), 200
+            return jsonify({"auth_token": access_token, "message": "Login Success", "status": "Success", "user": {"id": user.id, "username": user.username, "email": user.email, "Admin_status": user.isAdmin}}), 200
     return jsonify({"message": "Some error occur", "status": "failed"})
