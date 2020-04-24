@@ -23,6 +23,6 @@ def upload_file_to_aws(file):
         )
         return file.filename
 
-    except AttributeError as e:
+    except Exception as e:
         print("Something happened", e)
         return e
