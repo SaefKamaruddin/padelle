@@ -13,6 +13,7 @@ items_api_blueprint = Blueprint('items_api',
 
 @items_api_blueprint.route("/add_item", methods=["POST"])
 @csrf.exempt
+# to add jwtoken for admin user
 def add_item():
     data = request.get_json()
     print(data)
@@ -22,6 +23,7 @@ def add_item():
     price_input = data['price']
     image_input = data['image']
     stock_input = data['stock']
+    # remember to make function for stock decrease on buy confirm
 
     item = Item(name=item_name_input, product_type=product_type_input,
                 size=size_input, price=price_input, image=image_input, stock=stock_input)
@@ -39,6 +41,7 @@ def add_item():
 
 # need to get image url from aws
 @items_api_blueprint.route("/", methods=["POST"])
+# to add url to item list
 @csrf.exempt
 def upload():
     file = request.files.get("img")
