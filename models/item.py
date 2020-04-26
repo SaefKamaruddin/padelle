@@ -13,3 +13,11 @@ class Item(BaseModel):
     price = pw.DecimalField(decimal_places=2)
     image = pw.CharField(null=False)
     stock = pw.IntegerField(null=True)
+
+    @hybrid_property
+    def image_url(self):
+        from app import app
+        if self.image == None:
+            return "#"
+        else:
+            return app.config.get('AWS_S3_DOMAIN') + self.image
