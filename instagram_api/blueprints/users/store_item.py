@@ -11,9 +11,15 @@ items_api_blueprint = Blueprint('items_api',
                                 template_folder='templates')
 
 
+@items_api_blueprint.route('/<id>', methods=['GET'])
+def get_one_User(id):
+    item = Item.get_or_none(id=id)
+    return jsonify({"name": item.name}, {"type": item.product_type}, {
+        "size": item.size}, {"price": item.price}, {"image": item.image}, {"stock": item.stock})
+
+
 @items_api_blueprint.route("/add_item", methods=["POST"])
 @csrf.exempt
-# to add jwtoken for admin user
 def add_item():
     data = request.get_json()
     print(data)

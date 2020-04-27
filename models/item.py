@@ -10,7 +10,7 @@ class Item(BaseModel):
     product_type = pw.CharField(null=False)
     size = pw.CharField(null=False)
     color = pw.CharField(null=False, default=False)
-    price = pw.DecimalField(decimal_places=2)
+    price = pw.IntegerField(null=False)
     image = pw.CharField(null=False)
     stock = pw.IntegerField(null=True)
 
