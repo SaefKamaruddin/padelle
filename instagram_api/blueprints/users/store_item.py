@@ -12,10 +12,21 @@ items_api_blueprint = Blueprint('items_api',
 
 
 @items_api_blueprint.route('/<id>', methods=['GET'])
-def get_one_User(id):
+def get_one_Item(id):
     item = Item.get_or_none(id=id)
     return jsonify({"name": item.name}, {"type": item.product_type}, {
         "size": item.size}, {"price": item.price}, {"image": item.image}, {"stock": item.stock})
+
+
+@items_api_blueprint.route('/items', methods=['GET'])
+def get_all_item():
+    items = Item.select()
+    result = []
+    for item in items:
+        result.append({"name": item.name})
+
+    return jsonify([{"name": item.name, "type": item.product_type,
+                     "size": item.size, "price": item.price, "image": item.image, "stock": item.stock} for item in items])
 
 
 @items_api_blueprint.route("/add_item", methods=["POST"])
