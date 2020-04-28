@@ -23,6 +23,9 @@ class User(BaseModel):
     email = pw.CharField(unique=True, null=False)
     password = pw.TextField(null=False)
     isAdmin = pw.BooleanField(null=False, default=False)
+    address = pw.TextField(null=True)
+    zipcode = pw.CharField(null=True)
+    country = pw.CharField(null=True)
 
     # hash passwords
 

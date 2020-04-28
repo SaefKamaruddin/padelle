@@ -4,7 +4,7 @@ from app import csrf
 from flask_jwt_extended import (
     jwt_required, create_access_token, get_jwt_identity)
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from instagram_api.blueprints.users.mail import send_after_signup_success
 
 users_api_blueprint = Blueprint('users_api',
                                 __name__,
@@ -50,6 +50,7 @@ def sign_up():
 
         registered_user = User.get(User.username == username_input)
         print(registered_user)
+        send_after_signup_success(receiver_email=registered_user.email)
         return jsonify({"auth_token": access_token, "message": "Successfully created a user and signed in.", "status": "Success", "user": {"id": registered_user.id, "username": registered_user.username, "Admin_status": registered_user.isAdmin}}), 200
 
     else:
