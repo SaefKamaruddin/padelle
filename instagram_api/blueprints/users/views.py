@@ -22,12 +22,20 @@ def get_one_User(id):
     return jsonify({"username": user.username}, {"email": user.email})
 
 
+@users_api_blueprint.route('/all', methods=['GET'])
+def get_all_users():
+    users = User.select()
+    result = []
+    for user in users:
+        result.append({"name": user.username})
+    return jsonify([{"id": user.id, "username": user.username, "email": user.email} for user in users])
+
+
 @users_api_blueprint.route('/delete', methods=['POST'])
 @csrf.exempt
 def delete():
     user_id = request.get_json()
     user = User.get_or_none(User.id == user_id['id'])
-
     user.delete_instance()
     return jsonify({"username": user.username, "message": ["username is deleted"]})
 
