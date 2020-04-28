@@ -22,6 +22,16 @@ def get_one_User(id):
     return jsonify({"username": user.username}, {"email": user.email})
 
 
+@users_api_blueprint.route('/delete', methods=['POST'])
+@csrf.exempt
+def delete():
+    user_id = request.get_json()
+    user = User.get_or_none(User.id == user_id['id'])
+
+    user.delete_instance()
+    return jsonify({"username": user.username, "message": ["username is deleted"]})
+
+
 @users_api_blueprint.route('/signup', methods=['POST'])
 @csrf.exempt
 def sign_up():
@@ -50,8 +60,8 @@ def sign_up():
 
         registered_user = User.get(User.username == username_input)
         print(registered_user)
-        send_after_signup_success(receiver_email=registered_user.email)
-        return jsonify({"auth_token": access_token, "message": "Successfully created a user and signed in.", "status": "Success", "user": {"id": registered_user.id, "username": registered_user.username, "Admin_status": registered_user.isAdmin}}), 200
+        send_after_signup_success(email_input)
+        return jsonify({"auth_token": access_token, "message": "Successfully created a user and signed in.", "status": "Success", "user": {"id": registered_user.id, "username": registered_user.username, "Admin_status": registered_user.isAdmin, "email": registered_user.email}}), 200
 
     else:
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400
