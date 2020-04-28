@@ -5,6 +5,7 @@ from flask_jwt_extended import (
     jwt_required, create_access_token, get_jwt_identity)
 from werkzeug.security import generate_password_hash, check_password_hash
 from instagram_api.blueprints.users.mail import send_after_signup_success
+import json
 
 users_api_blueprint = Blueprint('users_api',
                                 __name__,
@@ -45,6 +46,9 @@ def delete():
 def sign_up():
     data = request.get_json()
     print(data)
+    json_parse = json.loads(data)
+    print(json_parse)
+
     username_input = data['username']
     email_input = data['email']
     password_input = data['password']
@@ -68,6 +72,7 @@ def sign_up():
 
         registered_user = User.get(User.username == username_input)
         print(registered_user)
+        print(email_input)
         send_after_signup_success(email_input)
         return jsonify({"auth_token": access_token, "message": "Successfully created a user and signed in.", "status": "Success", "user": {"id": registered_user.id, "username": registered_user.username, "Admin_status": registered_user.isAdmin, "email": registered_user.email}}), 200
 

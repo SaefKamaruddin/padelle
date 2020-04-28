@@ -20,7 +20,7 @@ def send_after_signup_success(receiver_email):
         os.environ.get("MAILGUN_DOMAIN")+"/messages",
         auth=("api", os.environ.get('MAILGUN_API')),
         data={"from": "Excited User <mailgun@" + os.environ.get("MAILGUN_DOMAIN") + ">",
-              "to": ["{receiver_email}"],
+              "to": "{receiver_email}",
               "subject": "Sign up",
               "text": "Welcome"
               })
