@@ -29,6 +29,24 @@ def get_all_item():
                      "size": item.size, "price": item.price, "image": item.image, "stock": item.stock, "image_url": item.image_url} for item in items])
 
 
+@items_api_blueprint.route('/delete/name', methods=['POST'])
+@csrf.exempt
+def delete_by_name():
+    item_name = request.get_json()
+    item = Item.get_or_none(Item.name == item_name['name'])
+    item.delete_instance()
+    return jsonify({"name": item.name, "message": ["item is deleted"]})
+
+
+@items_api_blueprint.route('/delete/id', methods=['POST'])
+@csrf.exempt
+def delete_by_id():
+    item_id = request.get_json()
+    item = Item.get_or_none(Item.id == item_id['id'])
+    item.delete_instance()
+    return jsonify({"name": item.name, "message": ["item is deleted"]})
+
+
 @items_api_blueprint.route("/add_item", methods=["POST"])
 @csrf.exempt
 @jwt_required
