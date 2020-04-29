@@ -6,6 +6,7 @@ from flask_jwt_extended import (
 from werkzeug.security import generate_password_hash, check_password_hash
 from instagram_api.blueprints.users.mail import send_after_signup_success
 import json
+from models.item import Item
 
 users_api_blueprint = Blueprint('users_api',
                                 __name__,
@@ -97,3 +98,31 @@ def login():
             access_token = create_access_token(identity=user.id)
             return jsonify({"auth_token": access_token, "message": "Login Success", "status": "Success", "user": {"id": user.id, "username": user.username, "email": user.email, "Admin_status": user.isAdmin}}), 200
     return jsonify({"message": "Some error occur", "status": "failed"})
+
+
+@users_api_blueprint.route("/add_item", methods=["POST"])
+@csrf.exempt
+@jwt_required
+def add_item():
+    data = request.get_json()
+    print(data)
+    item_name_input = data['name']
+    product_type_input = data['product_type']
+    size_input = data['size']
+    price_input = data['price']
+    image_input = data['image']
+    stock_input = data['stock']
+    # remember to make function for stock decrease on buy confirm
+
+    item = Item(name=item_name_input, product_type=product_type_input,
+                size=size_input, price=price_input, image=image_input, stock=stock_input)
+
+    if item_name_input == "" or product_type_input == "" or size_input == "" or price_input == "" or image_input == "" or stock_input == "":
+        return jsonify({'message': 'All fields required', 'status': 'failed'}), 400
+
+    elif item.save():
+
+        return jsonify({"message": "Successfully added item.", "status": "Success"}), 200
+
+    else:
+        return jsonify({"message": "Some error happened", "status": "Failed"}), 400
