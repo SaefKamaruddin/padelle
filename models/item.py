@@ -3,6 +3,7 @@ import peewee as pw
 from werkzeug.security import generate_password_hash
 import re
 from playhouse.hybrid import hybrid_property
+import os
 
 
 class Item(BaseModel):
@@ -20,4 +21,4 @@ class Item(BaseModel):
         if self.image == None:
             return "#"
         else:
-            return app.config.get('AWS_S3_DOMAIN') + self.image
+            return app.config.get('AWS_DOMAIN') + self.image

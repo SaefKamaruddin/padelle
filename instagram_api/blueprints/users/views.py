@@ -46,8 +46,8 @@ def delete():
 def sign_up():
     data = request.get_json()
     print(data)
-    json_parse = json.loads(data)
-    print(json_parse)
+    # json_parse = json.loads(data)
+    # print(json_parse)
 
     username_input = data['username']
     email_input = data['email']
