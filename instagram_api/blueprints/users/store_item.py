@@ -59,6 +59,7 @@ def add_item():
 # need to get image url from aws
 @items_api_blueprint.route("/upload_item_image", methods=["POST"])
 # to add url to item list
+@jwt_required
 @csrf.exempt
 def upload():
     file = request.files.get("img")
