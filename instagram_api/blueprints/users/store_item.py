@@ -31,6 +31,7 @@ def get_all_item():
 
 @items_api_blueprint.route("/add_item", methods=["POST"])
 @csrf.exempt
+@jwt_required
 def add_item():
     data = request.get_json()
     print(data)
