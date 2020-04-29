@@ -6,6 +6,8 @@ from flask_jwt_extended import (
 from werkzeug.security import generate_password_hash, check_password_hash
 from instagram_api.blueprints.users.mail import send_after_signup_success
 import json
+import os
+# import requests
 
 users_api_blueprint = Blueprint('users_api',
                                 __name__,
@@ -50,6 +52,7 @@ def sign_up():
     # print(json_parse)
 
     username_input = data['username']
+    global email_input
     email_input = data['email']
     password_input = data['password']
     user = User(username=username_input,
@@ -97,4 +100,3 @@ def login():
             access_token = create_access_token(identity=user.id)
             return jsonify({"auth_token": access_token, "message": "Login Success", "status": "Success", "user": {"id": user.id, "username": user.username, "email": user.email, "Admin_status": user.isAdmin}}), 200
     return jsonify({"message": "Some error occur", "status": "failed"})
-
