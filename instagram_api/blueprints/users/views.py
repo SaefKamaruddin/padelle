@@ -5,15 +5,32 @@ from flask_jwt_extended import (
     jwt_required, create_access_token, get_jwt_identity)
 from werkzeug.security import generate_password_hash, check_password_hash
 from instagram_api.blueprints.users.mail import send_after_signup_success
-import json
 import os
-# import requests
+import datetime
+from models.base_model import BaseModel
+import re
 
+#####Password validation######
+
+
+def has_lower(word):
+    return re.search("[a-z]", word)
+
+
+def has_upper(word):
+    return re.search("[A-Z]", word)
+
+
+def has_special(word):
+    return re.search("[\W]", word)
+
+
+####routing####
 users_api_blueprint = Blueprint('users_api',
                                 __name__,
                                 template_folder='templates')
 
-
+###Retrieving USER information##
 @users_api_blueprint.route('/', methods=['GET'])
 def index():
     return "USERS API"
@@ -33,14 +50,11 @@ def get_all_users():
         result.append({"name": user.username})
     return jsonify([{"id": user.id, "username": user.username, "email": user.email} for user in users])
 
-
-@users_api_blueprint.route('/delete', methods=['POST'])
-@csrf.exempt
-def delete():
-    user_id = request.get_json()
-    user = User.get_or_none(User.id == user_id['id'])
-    user.delete_instance()
-    return jsonify({"username": user.username, "message": ["username is deleted"]})
+###################################################
+###################################################
+###################################################
+###################################################
+# SIGNUP/Login Function
 
 
 @users_api_blueprint.route('/signup', methods=['POST'])
@@ -48,11 +62,7 @@ def delete():
 def sign_up():
     data = request.get_json()
     print(data)
-    # json_parse = json.loads(data)
-    # print(json_parse)
-
     username_input = data['username']
-    global email_input
     email_input = data['email']
     password_input = data['password']
     user = User(username=username_input,
@@ -81,9 +91,8 @@ def sign_up():
 
     else:
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400
-####################
 
-# api for user log in
+
 @users_api_blueprint.route('/login', methods=['POST'])
 @csrf.exempt
 def login():
@@ -100,3 +109,92 @@ def login():
             access_token = create_access_token(identity=user.id)
             return jsonify({"auth_token": access_token, "message": "Login Success", "status": "Success", "user": {"id": user.id, "username": user.username, "email": user.email, "Admin_status": user.isAdmin}}), 200
     return jsonify({"message": "Some error occur", "status": "failed"})
+
+
+###################################################
+###########EDITING USER INFORMATION################
+###################################################
+
+@users_api_blueprint.route('/delete', methods=['POST'])
+@csrf.exempt
+def delete():
+    user_id = request.get_json()
+    user = User.get_or_none(User.id == user_id['id'])
+    user.delete_instance()
+    return jsonify({"username": user.username, "message": ["username is deleted"]})
+
+
+@users_api_blueprint.route('/<id>/adress', methods=['POST'])
+@jwt_required
+@csrf.exempt
+def add_address(id):
+    data = request.get_json()
+    user = User.get_by_id(id)
+    address_input = data['address']
+    country_input = data['country']
+    zipcode_input = data['zipcode']
+    user = User(address=address_input,
+                country=country_input, zipcode=zipcode_input)
+
+    if address_input == "" or country_input == "" or zipcode_input == "":
+        return jsonify({'message': 'All fields required', 'status': 'failed'}), 400
+
+    elif user.update(address=address_input,
+                     country=country_input, zipcode=zipcode_input, updated_at=datetime.datetime.now()).where(User.id == id).execute():
+        return jsonify({"message": "Update success"})
+
+    else:
+        return jsonify({"message": "Some error happened", "status": "Failed"}), 400
+
+
+@users_api_blueprint.route('/<id>/username', methods=['POST'])
+@jwt_required
+@csrf.exempt
+def edit_username(id):
+    data = request.get_json()
+    user = User.get_by_id(id)
+    username_input = data['username']
+
+    username_check = User.get_or_none(User.username == username_input)
+
+    if username_input == "":
+        return jsonify({'message': 'Username must not be blank', 'status': 'failed'}), 400
+
+    elif username_check:
+        return jsonify({"message": ["username is already in use"], "status": "failed"}), 400
+
+    elif user.update(username=username_input, updated_at=datetime.datetime.now()).where(User.id == id).execute():
+        return jsonify({"message": "Update success"})
+
+    else:
+        return jsonify({"message": "Some error happened", "status": "Failed"}), 400
+
+
+@users_api_blueprint.route('/<id>/password', methods=['POST'])
+@csrf.exempt
+def edit_password(id):
+    data = request.get_json()
+    user = User.get_by_id(id)
+    password_input = data['password']
+
+    if password_input == "":
+        return jsonify({'message': 'password must not be blank', 'status': 'failed'}), 400
+
+    elif len(password_input) < 6:
+        return jsonify({'message': 'password must be at least 6 characters', 'status': 'failed'}), 400
+
+    elif not has_lower(password_input):
+        return jsonify({'message': ' Passwords needs at least one lowercase character', 'status': 'failed'}), 400
+
+    elif not has_upper(password_input):
+        return jsonify({'message': ' Passwords needs at least one uppercase character', 'status': 'failed'}), 400
+
+    elif not has_special(password_input):
+        return jsonify({'message': ' Passwords needs at least one special character', 'status': 'failed'}), 400
+
+    elif user.update(password=generate_password_hash(password_input), updated_at=datetime.datetime.now()).where(User.id == id).execute():
+
+        return jsonify({"message": "Update success"})
+
+    else:
+        return jsonify({"message": "Some error happened", "status": "Failed"}), 400
