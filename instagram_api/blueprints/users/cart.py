@@ -6,6 +6,7 @@ from flask_jwt_extended import (
     jwt_required, create_access_token, get_jwt_identity)
 from app import csrf
 import datetime
+import json
 
 cart_api_blueprint = Blueprint('cart_api',
                                __name__,
@@ -15,32 +16,44 @@ cart_api_blueprint = Blueprint('cart_api',
 @cart_api_blueprint.route('/<id>', methods=['GET'])
 def get_by_id(id):
     cart = Cart.get_or_none(id=id)
-    return jsonify({"date_created": cart.created_at},
-                   {"last_updated": cart.updated_at},
-                   {"user_id": cart.user_id},
-                   {"item_id": cart.item_id},
-                   {"payment_status": cart.payment_status},
-                   {"receipt_number": cart.receipt_number},
-                   {"amount": cart.amount})
+    return jsonify({"id": cart.id,
+                    "user id": cart.user.id,
+                    "item id": cart.item.id,
+                    "date_created": cart.created_at,
+                    "last_updated": cart.updated_at,
+                    "payment_status": cart.payment_status,
+                    "receipt_number": cart.receipt_number,
+                    "amount": cart.amount})
+
+
+# @cart_api_blueprint.route('/user/<id>', methods=['GET'])
+# def get_by_user(id):
+#     query = (User.select()
+#              .join(Cart)
+#              .where(Cart.user.id == id))
+
+#     for user in query:
+#         print(user.email)
+#     return None
 
 
 @cart_api_blueprint.route('/add_new_item', methods=['POST'])
 @csrf.exempt
 def add_to_cart():
     data = request.get_json()
-    user_id_input = data['user_id']
-    item_id_input = data['item_id']
+    user_input = data['user']
+    item_input = data['item']
 
-    cart = Cart(user_id=user_id_input, item_id=item_id_input)
-    cart_check = Cart.get_or_none(Cart.user_id == user_id_input,
-                                  Cart.item_id == item_id_input, Cart.payment_status == False)
+    cart = Cart(user=user_input, item=item_input)
+    cart_check = Cart.get_or_none(Cart.user == user_input,
+                                  Cart.item == item_input, Cart.payment_status == False)
 
-    if user_id_input == "" or item_id_input == "":
+    if user_input == "" or item_input == "":
         return jsonify({'message': 'All fields required', 'status': 'failed'}), 400
     elif cart_check:
         cart_check.update(
-            amount=Cart.amount+1, updated_at=datetime.datetime.now()).where(Cart.user_id == user_id_input,
-                                                                            Cart.item_id == item_id_input, Cart.payment_status == False).execute()
+            amount=Cart.amount+1, updated_at=datetime.datetime.now()).where(Cart.user_id == user_input,
+                                                                            Cart.item_id == item_input, Cart.payment_status == False).execute()
         return jsonify({'message': 'Item already exists, added to amount', 'status': 'success'}), 200
     elif cart.save():
         return jsonify({'message': 'Item added successfully', 'status': 'success'}), 200
