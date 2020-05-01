@@ -4,7 +4,7 @@ from app import csrf
 from flask_jwt_extended import (
     jwt_required, create_access_token, get_jwt_identity)
 from werkzeug.security import generate_password_hash, check_password_hash
-from instagram_api.blueprints.users.mail import send_after_signup_success
+from instagram_api.utils.mail import send_after_signup_success
 import os
 import datetime
 from models.base_model import BaseModel
@@ -147,7 +147,7 @@ def add_address(id):
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400
 
 
-@users_api_blueprint.route('/<id>/username', methods=['POST'])
+@users_api_blueprint.route('/username/<id>', methods=['POST'])
 @jwt_required
 @csrf.exempt
 def edit_username(id):
@@ -170,7 +170,7 @@ def edit_username(id):
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400
 
 
-@users_api_blueprint.route('/<id>/password', methods=['POST'])
+@users_api_blueprint.route('/password/<id>', methods=['POST'])
 @csrf.exempt
 def edit_password(id):
     data = request.get_json()

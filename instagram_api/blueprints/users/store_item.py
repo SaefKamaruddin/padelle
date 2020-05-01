@@ -2,7 +2,7 @@ from flask import Blueprint, Flask, jsonify, render_template, request, make_resp
 from models.item import Item
 from flask_jwt_extended import (
     jwt_required, create_access_token, get_jwt_identity)
-from instagram_api.helpers import upload_file_to_aws
+from instagram_api.utils.helpers import upload_file_to_aws
 from app import csrf
 import datetime
 import re
