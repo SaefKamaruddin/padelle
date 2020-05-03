@@ -26,15 +26,13 @@ def get_by_id(id):
                     "amount": cart.amount})
 
 
-# @cart_api_blueprint.route('/user/<id>', methods=['GET'])
-# def get_by_user(id):
-#     query = (User.select()
-#              .join(Cart)
-#              .where(Cart.user.id == id))
+@cart_api_blueprint.route('/user/<id>', methods=['GET'])
+def get_by_user(id):
 
-#     for user in query:
-#         print(user.email)
-#     return None
+    query = User.select(User, Cart).join(Cart).where(Cart.user.id == id)
+
+    print(query)
+    return jsonify({"query": User.id})
 
 
 @cart_api_blueprint.route('/add_new_item', methods=['POST'])

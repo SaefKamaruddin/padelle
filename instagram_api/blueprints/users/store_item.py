@@ -20,6 +20,19 @@ def get_one_Item(id):
                     "size": item.size, "color": item.color, "price": item.price, "image": item.image, "stock": item.stock, "image_url": item.image_url})
 
 
+@items_api_blueprint.route('/same/<name>', methods=['GET'])
+def get_all_same_name(name):
+    print("name")
+    items = Item.select().where(Item.name == name)
+    result = []
+    result = []
+    for item in items:
+        result.append({"name": item.name})
+
+    return jsonify([{"name": item.name, "type": item.product_type,
+                     "size": item.size, "color": item.color, "price": item.price, "image": item.image, "stock": item.stock, "image_url": item.image_url} for item in items])
+
+
 @items_api_blueprint.route('/items', methods=['GET'])
 def get_all_item():
     items = Item.select()
@@ -94,7 +107,7 @@ def upload():
 ##########################################
 ###########UPDATE & EDIT INFO#############
 ##########################################
-@items_api_blueprint.route("/<id>/name", methods=["POST"])
+@items_api_blueprint.route("/name/<id>", methods=["POST"])
 @csrf.exempt
 def edit_item_name(id):
     data = request.get_json()
@@ -111,7 +124,7 @@ def edit_item_name(id):
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400
 
 
-@items_api_blueprint.route("/<id>/product_type", methods=["POST"])
+@items_api_blueprint.route("/product_type/<id>", methods=["POST"])
 @csrf.exempt
 def edit_item_product_type(id):
     data = request.get_json()
@@ -128,7 +141,7 @@ def edit_item_product_type(id):
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400
 
 
-@items_api_blueprint.route("/<id>/size", methods=["POST"])
+@items_api_blueprint.route("/size/<id>", methods=["POST"])
 @csrf.exempt
 def edit_item_size(id):
     data = request.get_json()
@@ -145,7 +158,7 @@ def edit_item_size(id):
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400
 
 
-@items_api_blueprint.route("/<id>/color", methods=["POST"])
+@items_api_blueprint.route("/color/<id>", methods=["POST"])
 @csrf.exempt
 def edit_item_color(id):
     data = request.get_json()
@@ -162,7 +175,7 @@ def edit_item_color(id):
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400
 
 
-@items_api_blueprint.route("/<id>/price", methods=["POST"])
+@items_api_blueprint.route("/price/<id>", methods=["POST"])
 @csrf.exempt
 def edit_item_price(id):
     data = request.get_json()
@@ -179,7 +192,7 @@ def edit_item_price(id):
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400
 
 
-@items_api_blueprint.route("/<id>/image", methods=["POST"])
+@items_api_blueprint.route("/image/<id>", methods=["POST"])
 @csrf.exempt
 def edit_item_image(id):
     data = request.get_json()
@@ -204,7 +217,7 @@ def has_alphabet(word):
     return re.search("[\D]", word)
 
 
-@items_api_blueprint.route("/<id>/stock", methods=["POST"])
+@items_api_blueprint.route("/stock/<id>, methods=["POST"])
 @csrf.exempt
 def edit_item_stock(id):
     data = request.get_json()
