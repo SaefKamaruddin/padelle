@@ -25,7 +25,7 @@ def get_all_same_name(name):
     print("name")
     items = Item.select().where(Item.name == name)
 
-    return jsonify([{"name": item.name, "type": item.product_type,
+    return jsonify([{"id": item.id, "name": item.name, "type": item.product_type,
                      "size": item.size, "color": item.color, "price": item.price, "image": item.image, "stock": item.stock, "image_url": item.image_url} for item in items])
 
 
