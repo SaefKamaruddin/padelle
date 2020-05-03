@@ -24,9 +24,14 @@ def get_one_Item(id):
 def get_all_same_name(name):
     print("name")
     items = Item.select().where(Item.name == name)
-    result = []
-    for item in items:
-        result.append({"name": item.name})
+
+    return jsonify([{"name": item.name, "type": item.product_type,
+                     "size": item.size, "color": item.color, "price": item.price, "image": item.image, "stock": item.stock, "image_url": item.image_url} for item in items])
+
+
+@items_api_blueprint.route('/unique', methods=['GET'])
+def get_distinct():
+    items = Item.select(Item.name, Item.product_type).distinct()
 
     return jsonify([{"name": item.name, "type": item.product_type,
                      "size": item.size, "color": item.color, "price": item.price, "image": item.image, "stock": item.stock, "image_url": item.image_url} for item in items])
@@ -35,9 +40,6 @@ def get_all_same_name(name):
 @items_api_blueprint.route('/items', methods=['GET'])
 def get_all_item():
     items = Item.select()
-    result = []
-    for item in items:
-        result.append({"name": item.name})
 
     return jsonify([{"name": item.name, "type": item.product_type,
                      "size": item.size, "color": item.color, "price": item.price, "image": item.image, "stock": item.stock, "image_url": item.image_url} for item in items])
