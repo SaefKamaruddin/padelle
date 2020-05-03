@@ -29,10 +29,12 @@ def get_by_id(id):
 @cart_api_blueprint.route('/user/<id>', methods=['GET'])
 def get_by_user(id):
 
-    query = User.select(User, Cart).join(Cart).where(Cart.user.id == id)
+    items = (User
+             .select()
+             .join(Cart)
+             .where(Cart.user.id == id))
 
-    print(query)
-    return jsonify({"query": User.id})
+    return jsonify([{"id": item.id, "name": item.username}for item in items])
 
 
 @cart_api_blueprint.route('/add_new_item', methods=['POST'])

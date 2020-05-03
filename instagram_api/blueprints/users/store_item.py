@@ -31,9 +31,9 @@ def get_all_same_name(name):
 
 @items_api_blueprint.route('/unique', methods=['GET'])
 def get_distinct():
-    items = Item.select().distinct(Item.name, Item.product_type, Item.color)
+    items = Item.select().distinct(Item.name, Item.product_type)
 
-    return jsonify([{"name": item.name, "type": item.product_type,
+    return jsonify([{"id": item.id, "name": item.name, "type": item.product_type,
                      "size": item.size, "color": item.color, "price": item.price, "image": item.image, "stock": item.stock, "image_url": item.image_url} for item in items])
 
 
