@@ -25,7 +25,6 @@ def get_all_same_name(name):
     print("name")
     items = Item.select().where(Item.name == name)
     result = []
-    result = []
     for item in items:
         result.append({"name": item.name})
 
@@ -217,7 +216,7 @@ def has_alphabet(word):
     return re.search("[\D]", word)
 
 
-@items_api_blueprint.route("/stock/<id>, methods=["POST"])
+@items_api_blueprint.route("/stock/<id>", methods=["POST"])
 @csrf.exempt
 def edit_item_stock(id):
     data = request.get_json()
