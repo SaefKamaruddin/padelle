@@ -2,6 +2,7 @@ from models.base_model import BaseModel
 import peewee as pw
 from werkzeug.security import generate_password_hash
 import re
+import jwt
 
 # REGEX for password
 

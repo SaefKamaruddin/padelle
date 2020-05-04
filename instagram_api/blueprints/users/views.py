@@ -36,7 +36,7 @@ def index():
     return "USERS API"
 
 
-@users_api_blueprint.route('/<id>', methods=['GET'])
+@users_api_blueprint.route('/user/<id>', methods=['GET'])
 def get_one_User(id):
     user = User.get_or_none(id=id)
     return jsonify({"username": user.username}, {"email": user.email})
@@ -49,6 +49,14 @@ def get_all_users():
     for user in users:
         result.append({"name": user.username})
     return jsonify([{"id": user.id, "username": user.username, "email": user.email} for user in users])
+
+
+@users_api_blueprint.route('/me', methods=['GET'])
+@jwt_required
+def my_info():
+    user = User.get_by_id(get_jwt_identity())
+    print(get_jwt_identity())
+    return jsonify({"id": user.id, "email": user.email, "username": user.username})
 
 ###################################################
 ###################################################
@@ -108,7 +116,7 @@ def login():
         if result:
             access_token = create_access_token(identity=user.id)
             return jsonify({"auth_token": access_token, "message": "Login Success", "status": "Success", "user": {"id": user.id, "username": user.username, "email": user.email, "Admin_status": user.isAdmin}}), 200
-    return jsonify({"message": "Some error occur", "status": "failed"})
+    return jsonify({"message": "Some error occur", "status": "failed"}), 400
 
 
 ###################################################
@@ -124,7 +132,7 @@ def delete():
     return jsonify({"username": user.username, "message": ["username is deleted"]})
 
 
-@users_api_blueprint.route('/<id>/adress', methods=['POST'])
+@users_api_blueprint.route('/address/<id>', methods=['POST'])
 @jwt_required
 @csrf.exempt
 def add_address(id):

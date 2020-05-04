@@ -32,27 +32,54 @@ def get_by_user(id):
     items = (User
              .select()
              .join(Cart)
+             .join(Item)
              .where(Cart.user.id == id))
 
     return jsonify([{"id": item.id, "name": item.username}for item in items])
 
 
+# @cart_api_blueprint.route('/add_new_item', methods=['POST'])
+# @csrf.exempt
+# def add_to_cart():
+#     data = request.get_json()
+#     user_input = data['user']
+#     item_input = data['item']
+
+#     cart = Cart(user=user_input, item=item_input)
+#     cart_check = Cart.get_or_none(Cart.user == user_input,
+#                                   Cart.item == item_input, Cart.payment_status == False)
+
+#     if user_input == "" or item_input == "":
+#         return jsonify({'message': 'All fields required', 'status': 'failed'}), 400
+#     elif cart_check:
+#         cart_check.update(
+#             amount=Cart.amount+1, updated_at=datetime.datetime.now()).where(Cart.user_id == user_input,
+#                                                                             Cart.item_id == item_input, Cart.payment_status == False).execute()
+#         return jsonify({'message': 'Item already exists, added to amount', 'status': 'success'}), 200
+#     elif cart.save():
+#         return jsonify({'message': 'Item added successfully', 'status': 'success'}), 200
+
+#     else:
+#         return jsonify({"message": "Uncaught error", "status": "Failed"}), 400
+
+
 @cart_api_blueprint.route('/add_new_item', methods=['POST'])
 @csrf.exempt
+@jwt_required
 def add_to_cart():
     data = request.get_json()
-    user_input = data['user']
     item_input = data['item']
+    user_id = User.get_by_id(get_jwt_identity())
 
-    cart = Cart(user=user_input, item=item_input)
-    cart_check = Cart.get_or_none(Cart.user == user_input,
+    cart = Cart(user=user_id, item=item_input)
+    cart_check = Cart.get_or_none(Cart.user == user_id,
                                   Cart.item == item_input, Cart.payment_status == False)
 
-    if user_input == "" or item_input == "":
+    if item_input == "":
         return jsonify({'message': 'All fields required', 'status': 'failed'}), 400
     elif cart_check:
         cart_check.update(
-            amount=Cart.amount+1, updated_at=datetime.datetime.now()).where(Cart.user_id == user_input,
+            amount=Cart.amount+1, updated_at=datetime.datetime.now()).where(Cart.user_id == user_id,
                                                                             Cart.item_id == item_input, Cart.payment_status == False).execute()
         return jsonify({'message': 'Item already exists, added to amount', 'status': 'success'}), 200
     elif cart.save():
