@@ -15,7 +15,7 @@ cart_api_blueprint = Blueprint('cart_api',
 # functions: add to cart, remove from cart, afterpayment, change payment to status to True, issue receipt after payment
 @cart_api_blueprint.route('/<id>', methods=['GET'])
 def get_by_id(id):
-    cart = Cart.get_or_none(id=id)
+    cart = Cart.user.get_or_none(id=id)
     return jsonify({"id": cart.id,
                     "user id": cart.user.id,
                     "item id": cart.item.id,
@@ -26,16 +26,51 @@ def get_by_id(id):
                     "amount": cart.amount})
 
 
-@cart_api_blueprint.route('/user/<id>', methods=['GET'])
-def get_by_user(id):
+@cart_api_blueprint.route('/user/cart', methods=['GET'])
+@jwt_required
+def get_by_name():
+    current_id = User.get_by_id(get_jwt_identity())
+    carts = Cart.select().where(Cart.user == current_id, Cart.payment_status == False)
+    return jsonify([{"user": {
+                    "id": cart.user.id,
+                    "username": cart.user.username},
+        "cart": {"id": cart.id,
+                 "amount": cart.amount},
+        "item":
+        {"id": cart.item.id,
+         "color": cart.item.color,
+         "name": cart.item.name,
+         "price": cart.item.price,
+         "size": cart.item.size}}
+        for cart in carts])
 
-    items = (User
-             .select()
-             .join(Cart)
-             .join(Item)
-             .where(Cart.user.id == id))
 
-    return jsonify([{"id": item.id, "name": item.username}for item in items])
+@cart_api_blueprint.route('/user/paid', methods=['GET'])
+def paid_item():
+    current_id = User.get_by_id(get_jwt_identity())
+    carts = Cart.select().where(Cart.user == current_id, Cart.payment_status == True)
+    return jsonify([{"user": {
+                    "id": cart.user.id,
+                    "username": cart.user.username},
+        "cart": {"id": cart.id,
+                 "amount": cart.amount},
+        "item":
+        {"id": cart.item.id,
+         "color": cart.item.color,
+         "name": cart.item.name,
+         "price": cart.item.price,
+         "size": cart.item.size}}
+        for cart in carts])
+
+    # return jsonify({"id": cart.id,
+    #                 "user id": cart.user.id,
+    #                 "username": cart.user.username,
+    #                 "item id": cart.item.id,
+    #                 "date_created": cart.created_at,
+    #                 "last_updated": cart.updated_at,
+    #                 "payment_status": cart.payment_status,
+    #                 "receipt_number": cart.receipt_number,
+    #                 "amount": cart.amount})
 
 
 # @cart_api_blueprint.route('/add_new_item', methods=['POST'])
