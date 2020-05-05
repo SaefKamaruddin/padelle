@@ -18,12 +18,12 @@ gateway = braintree.BraintreeGateway(
         braintree.Environment.Sandbox,
         merchant_id=os.environ.get('BT_MERCHANT_ID'),
         public_key=os.environ.get('BT_PUBLIC_KEY'),
-        private_key=os.environ.get('BT_PRIVATE_KEY ')
+        private_key=os.environ.get('BT_PRIVATE_KEY')
     )
 )
 
 
-@payment_api_blueprint.route('/new_payment', methods=['POST'])
+@payment_api_blueprint.route('/new_payment')
 def new_payment():
     client_token = gateway.client_token.generate()
     return render_template("payment.html", client_token=client_token)
@@ -31,14 +31,13 @@ def new_payment():
 
 @payment_api_blueprint.route('/checkout', methods=['POST'])
 @csrf.exempt
-@jwt_required
 def checkout():
     # get current user.id, payment_status = False> true
     print(request.form.get('paymentMethodNonce'))
     result = gateway.transaction.sale({
         # variable for total amount of cost of products in cart
         "amount": request.form["amount"],
-        "payment_method_nonce": request.form.get('paymentMethodNonce'),
+        "payment_method_nonce": request.form['paymentMethodNonce'],
         "options": {
             "submit_for_settlement": True
         }

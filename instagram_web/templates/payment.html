@@ -12,12 +12,13 @@
   <div id="dropin-container"></div>
   <button id="submit-button">Submit payment</button>
 </div>
-
 <script>
+  var button = document.querySelector("#submit-button");
+
   braintree.dropin.create(
     {
       // Insert your tokenization key here
-      authorization: "<use_your_tokenization_key>",
+      authorization: "{{client_token}}",
       container: "#dropin-container",
     },
     function (createErr, instance) {
@@ -28,10 +29,11 @@
         ) {
           // When the user clicks on the 'Submit payment' button this code will send the
           // encrypted payment information in a variable called a payment method nonce
+          console.log(payload.nonce);
           $.ajax({
             type: "POST",
-            url: "/checkout",
-            data: { paymentMethodNonce: payload.nonce },
+            url: "/payment/checkout",
+            data: { paymentMethodNonce: payload.nonce, amount: 10 },
           }).done(function (result) {
             // Tear down the Drop-in UI
             instance.teardown(function (teardownErr) {
