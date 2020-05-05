@@ -32,7 +32,6 @@ def new_payment():
 @payment_api_blueprint.route('/checkout', methods=['POST'])
 @csrf.exempt
 def checkout():
-    # get current user.id, payment_status = False> true
     print(request.form.get('paymentMethodNonce'))
     result = gateway.transaction.sale({
         # variable for total amount of cost of products in cart
@@ -42,6 +41,8 @@ def checkout():
             "submit_for_settlement": True
         }
     })
+
+    # get current user.id, payment_status = False> true
 
     print(result)
 

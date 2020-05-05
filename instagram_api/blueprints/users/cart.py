@@ -40,6 +40,8 @@ def get_by_name():
         {"id": cart.item.id,
          "color": cart.item.color,
          "name": cart.item.name,
+         "product_type": cart.item.product_type,
+         "image": cart.item.image_url,
          "price": cart.item.price,
          "size": cart.item.size}}
         for cart in carts])
@@ -58,6 +60,8 @@ def paid_item():
         {"id": cart.item.id,
          "color": cart.item.color,
          "name": cart.item.name,
+         "product_type": cart.item.product_type,
+         "image": cart.item.image_url,
          "price": cart.item.price,
          "size": cart.item.size}}
         for cart in carts])
