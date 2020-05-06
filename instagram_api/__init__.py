@@ -13,5 +13,5 @@ jwt = JWTManager(app)
 
 app.register_blueprint(users_api_blueprint, url_prefix='/api/v1/users')
 app.register_blueprint(items_api_blueprint, url_prefix='/api/v1/items')
-app.register_blueprint(payment_api_blueprint, url_prefix='/payment')
+app.register_blueprint(payment_api_blueprint, url_prefix='/api/v1/payment')
 app.register_blueprint(cart_api_blueprint, url_prefix='/api/v1/cart')
