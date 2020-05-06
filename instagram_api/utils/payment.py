@@ -27,6 +27,7 @@ gateway = braintree.BraintreeGateway(
 
 
 @payment_api_blueprint.route('/new_payment', methods=['GET'])
+@csrf.exempt
 def new_payment():
     client_token = gateway.client_token.generate()
     return jsonify({"client token": client_token})
