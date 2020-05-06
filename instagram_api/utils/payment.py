@@ -26,10 +26,10 @@ gateway = braintree.BraintreeGateway(
 )
 
 
-@payment_api_blueprint.route('/new_payment')
+@payment_api_blueprint.route('/new_payment', methods=['POST'])
 def new_payment():
     client_token = gateway.client_token.generate()
-    return render_template("payment.html", client_token=client_token)
+    return jsonify({"client token": client_token})
 
 
 @payment_api_blueprint.route('/checkout', methods=['POST'])
@@ -37,10 +37,14 @@ def new_payment():
 @jwt_required
 def checkout():
     print(request.form.get('paymentMethodNonce'))
+    data = request.get_json()
+    amount_input = data['amount']
+    pmNonce_input = data['paymentMethod']
+
     result = gateway.transaction.sale({
         # variable for total amount of cost of products in cart
-        "amount": request.form["amount"],
-        "payment_method_nonce": request.form['paymentMethodNonce'],
+        "amount": amount_input,
+        "payment_method_nonce": pmNonce_input,
         "options": {
             "submit_for_settlement": True
         }
@@ -59,7 +63,7 @@ def checkout():
         print(result.transaction.id)
         print(result.transaction.amount)
 
-        return jsonify({'message': 'Success', 'status': 'failed'}), 200
+        return jsonify({'message': 'Success', 'Amount Paid': (result.transaction.amount), 'status': 'failed'}), 200
 
     else:
         return jsonify({'message': 'failed', 'status': 'failed'}), 400
