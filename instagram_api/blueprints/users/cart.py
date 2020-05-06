@@ -13,7 +13,7 @@ cart_api_blueprint = Blueprint('cart_api',
                                template_folder='templates')
 
 # functions: add to cart, remove from cart, afterpayment, change payment to status to True, issue receipt after payment
-@cart_api_blueprint.route('/<id>', methods=['GET'])
+@cart_api_blueprint.route('/get/<id>', methods=['GET'])
 def get_by_id(id):
     cart = Cart.user.get_or_none(id=id)
     return jsonify({"id": cart.id,

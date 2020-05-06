@@ -1,11 +1,14 @@
 from flask import Blueprint, Flask, jsonify, render_template, request, make_response
 from models.user import User
+from models.payment import Payment
+from models.cart import Cart
 from app import csrf
 from flask_jwt_extended import (
     jwt_required, create_access_token, get_jwt_identity)
 from werkzeug.security import generate_password_hash, check_password_hash
 import braintree
 import os
+from instagram_api.utils.mail import send_after_payment
 
 
 payment_api_blueprint = Blueprint('payment_api',
@@ -31,6 +34,7 @@ def new_payment():
 
 @payment_api_blueprint.route('/checkout', methods=['POST'])
 @csrf.exempt
+@jwt_required
 def checkout():
     print(request.form.get('paymentMethodNonce'))
     result = gateway.transaction.sale({
@@ -41,9 +45,21 @@ def checkout():
             "submit_for_settlement": True
         }
     })
+   # if payment is successful , update payment status to true
+   # payment.save total amount,   Braintree_Transaction_id , get by id = user
+    if result.is_success:
+        current_id = User.get_by_id(get_jwt_identity())
+        Payment(user=current_id, Braintree_Transaction_id=result.transaction.id,
+                Total_amount=result.transaction.amount).save()
 
-    # get current user.id, payment_status = False> true
+        Cart.update(payment_status=True).where(
+            Cart.user == current_id, Cart.payment_status == False).execute()
 
-    print(result)
+        print(result.transaction)
+        print(result.transaction.id)
+        print(result.transaction.amount)
 
-    return "Paid"
+        return jsonify({'message': 'Success', 'status': 'failed'}), 200
+
+    else:
+        return jsonify({'message': 'failed', 'status': 'failed'}), 400
