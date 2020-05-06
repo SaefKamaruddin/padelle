@@ -33,6 +33,7 @@ users_api_blueprint = Blueprint('users_api',
 ###Retrieving USER information##
 @users_api_blueprint.route('/', methods=['GET'])
 def index():
+
     return "USERS API"
 
 
@@ -56,6 +57,8 @@ def get_all_users():
 def my_info():
     user = User.get_by_id(get_jwt_identity())
     print(get_jwt_identity())
+    print(user.id)
+    print(user.email)
     return jsonify({"id": user.id, "email": user.email, "username": user.username})
 
 ###################################################
