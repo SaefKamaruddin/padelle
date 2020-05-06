@@ -26,7 +26,7 @@ gateway = braintree.BraintreeGateway(
 )
 
 
-@payment_api_blueprint.route('/new_payment', methods=['POST'])
+@payment_api_blueprint.route('/new_payment', methods=['GET'])
 def new_payment():
     client_token = gateway.client_token.generate()
     return jsonify({"client token": client_token})
