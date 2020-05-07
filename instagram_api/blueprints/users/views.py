@@ -40,13 +40,13 @@ def index():
 @users_api_blueprint.route('/user/<id>', methods=['GET'])
 def get_one_User(id):
     user = User.get_or_none(id=id)
-    return jsonify({"username": user.username, "email": user.email, "address": user.address, "zipcode": user.zipcode, "country": user.country})
+    return jsonify({"username": user.username, "email": user.email, "address": user.address, "zipcode": user.zipcode, "country": user.country, "mail_list": user.mailing_list})
 
 
 @users_api_blueprint.route('/all', methods=['GET'])
 def get_all_users():
     users = User.select()
-    return jsonify([{"id": user.id, "username": user.username, "email": user.email, "address": user.address, "zipcode": user.zipcode, "country": user.country} for user in users])
+    return jsonify([{"id": user.id, "username": user.username, "email": user.email, "address": user.address, "zipcode": user.zipcode, "country": user.country, "mail": user.mailing_list} for user in users])
 
 
 @users_api_blueprint.route('/me', methods=['GET'])
