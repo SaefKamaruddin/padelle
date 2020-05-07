@@ -128,6 +128,33 @@ def add_to_cart():
         return jsonify({"message": "Uncaught error", "status": "Failed"}), 400
 
 
+@cart_api_blueprint.route('/add_many', methods=['POST'])
+@csrf.exempt
+@jwt_required
+def add_more():
+    data = request.get_json()
+    item_input = data['item']
+    amount_input = data['amount']
+    user_id = User.get_by_id(get_jwt_identity())
+
+    cart = Cart(user=user_id, item=item_input, amount=amount_input)
+    cart_check = Cart.get_or_none(Cart.user == user_id,
+                                  Cart.item == item_input, Cart.payment_status == False)
+
+    if item_input == "":
+        return jsonify({'message': 'All fields required', 'status': 'failed'}), 400
+    elif cart_check:
+        cart_check.update(
+            amount=Cart.amount+amount_input, updated_at=datetime.datetime.now()).where(Cart.user_id == user_id,
+                                                                                       Cart.item_id == item_input, Cart.payment_status == False).execute()
+        return jsonify({'message': 'Item already exists, added to amount', 'status': 'success'}), 200
+    elif cart.save():
+        return jsonify({'message': 'Item added successfully', 'status': 'success'}), 200
+
+    else:
+        return jsonify({"message": "Uncaught error", "status": "Failed"}), 400
+
+
 @cart_api_blueprint.route('/add/<id>', methods=['POST'])
 @csrf.exempt
 def add_same_item(id):
