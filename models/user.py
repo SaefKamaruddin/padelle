@@ -27,6 +27,7 @@ class User(BaseModel):
     address = pw.TextField(null=True)
     zipcode = pw.CharField(null=True)
     country = pw.CharField(null=True)
+    mailing_list = pw.BooleanField(null=False, default=True)
 
     # hash passwords
 

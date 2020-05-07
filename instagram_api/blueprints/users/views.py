@@ -40,16 +40,13 @@ def index():
 @users_api_blueprint.route('/user/<id>', methods=['GET'])
 def get_one_User(id):
     user = User.get_or_none(id=id)
-    return jsonify({"username": user.username}, {"email": user.email})
+    return jsonify({"username": user.username, "email": user.email, "address": user.address, "zipcode": user.zipcode, "country": user.country})
 
 
 @users_api_blueprint.route('/all', methods=['GET'])
 def get_all_users():
     users = User.select()
-    result = []
-    for user in users:
-        result.append({"name": user.username})
-    return jsonify([{"id": user.id, "username": user.username, "email": user.email} for user in users])
+    return jsonify([{"id": user.id, "username": user.username, "email": user.email, "address": user.address, "zipcode": user.zipcode, "country": user.country} for user in users])
 
 
 @users_api_blueprint.route('/me', methods=['GET'])
@@ -76,8 +73,9 @@ def sign_up():
     username_input = data['username']
     email_input = data['email']
     password_input = data['password']
+    mail_input = data['mailing_list']
     user = User(username=username_input,
-                password=password_input, email=email_input)
+                password=password_input, email=email_input, mailing_list=mail_input)
 
     username_check = User.get_or_none(User.username == username_input)
     email_check = User.get_or_none(User.email == email_input)
@@ -209,3 +207,18 @@ def edit_password(id):
 
     else:
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400
+
+
+@users_api_blueprint.route('/email_list', methods=['POST'])
+@csrf.exempt
+@jwt_required
+def edit_mailing_list():
+    current_id = User.get_by_id(get_jwt_identity())
+    if current_id.mailing_list == True:
+        print(current_id.mailing_list)
+        current_id.update(mailing_list=False).execute()
+        return jsonify({"message": "You have been removed from the mailing list", "status": "success"}), 200
+
+    elif current_id.mailing_list == False:
+        current_id.update(mailing_list=True).execute()
+        return jsonify({"message": "You have been added to the mailing list", "status": "success"}), 200
