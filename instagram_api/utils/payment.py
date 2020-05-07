@@ -50,8 +50,7 @@ def checkout():
             "submit_for_settlement": True
         }
     })
-
-    return jsonify({"message": "hello"})
+    return "Temp"
    # if payment is successful , update payment status to true
    # payment.save total amount,   Braintree_Transaction_id , get by id = user
     # if result.is_success:
@@ -71,4 +70,4 @@ def checkout():
     #     return jsonify({'message': 'Success', 'Amount Paid': (result.transaction.amount), 'status': 'failed'}), 200
 
     # else:
-    #     return jsonify({'message': 'failed', 'status': 'failed'}), 400
+    return jsonify({'message': 'failed', 'status': 'failed'}), 400

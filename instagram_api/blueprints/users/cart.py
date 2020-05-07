@@ -149,12 +149,12 @@ def deduct_same_item(id):
     if cart.payment_status == True:
         return jsonify({'message': 'This transaction has been completed, create a new cart', 'status': 'failed'}), 400
 
+    elif cart.amount == 1:
+        cart.delete_instance()
+        return jsonify({"Item removed from record": "Update success"})
+
     elif cart.update(amount=Cart.amount-1, updated_at=datetime.datetime.now()).where(Cart.id == id).execute():
-        if cart.amount < 1:
-            cart.delete_instance()
-            return jsonify({"Item removed from record": "Update success"})
-        else:
-            return jsonify({"message": "Update success"})
+        return jsonify({"message": "Update success"})
 
     else:
         return jsonify({"message": "Uncaught error", "status": "Failed"}), 400
