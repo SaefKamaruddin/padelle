@@ -131,7 +131,7 @@ def add_to_cart():
 @cart_api_blueprint.route('/add_many', methods=['POST'])
 @csrf.exempt
 @jwt_required
-def add_more():
+def add_many():
     data = request.get_json()
     item_input = data['item']
     amount_input = data['amount']

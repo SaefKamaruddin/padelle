@@ -4,7 +4,7 @@ from app import csrf
 from flask_jwt_extended import (
     jwt_required, create_access_token, get_jwt_identity)
 from werkzeug.security import generate_password_hash, check_password_hash
-from instagram_api.utils.mail import send_after_signup_success
+from instagram_api.utils.mail import send_after_signup_success, add_list_member
 import os
 import datetime
 from models.base_model import BaseModel
@@ -95,8 +95,15 @@ def sign_up():
         registered_user = User.get(User.username == username_input)
         print(registered_user)
         print(email_input)
+        print(registered_user.mailing_list)
         send_after_signup_success(email_input)
-        return jsonify({"auth_token": access_token, "message": "Successfully created a user and signed in.", "status": "Success", "user": {"id": registered_user.id, "username": registered_user.username, "Admin_status": registered_user.isAdmin, "email": registered_user.email}}), 200
+
+        if registered_user.mailing_list == True:
+            print("hello")
+            add_list_member(receiver_email=email_input,
+                            username=username_input)
+
+        return jsonify({"auth_token": access_token, "message": "Successfully created a user and signed in.", "status": "Success", "user": {"id": registered_user.id, "username": registered_user.username, "Admin_status": registered_user.isAdmin, "email": registered_user.email, "mailing_list": registered_user.mailing_list}}), 200
 
     else:
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400

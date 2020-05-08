@@ -26,3 +26,13 @@ def send_after_signup_success(receiver_email):
               "subject": "Sign up",
               "text": "Welcome"
               })
+
+
+def add_list_member(receiver_email, username):
+    return requests.post(
+        "https://api.mailgun.net/v3/lists/padelle_mail@" +
+        os.environ.get("MAILGUN_DOMAIN")+"/members",
+        auth=('api', os.environ.get('MAILGUN_API')),
+        data={'subscribed': True,
+              'address': receiver_email,
+              'description': 'signup', })
