@@ -65,8 +65,11 @@ def paid_item():
          "product_type": cart.item.product_type,
          "image": cart.item.image_url,
          "price": cart.item.price,
-         "size": cart.item.size}}
-        for cart in carts])
+         "size": cart.item.size},
+        "payment": {
+            "id": cart.payment.id,
+            "Braintree_id": cart.payment.Braintree_Transaction_id,
+            "Total paid": cart.payment.Total_amount}}for cart in carts])
 
     # return jsonify({"id": cart.id,
     #                 "user id": cart.user.id,
