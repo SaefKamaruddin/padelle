@@ -140,12 +140,12 @@ def delete():
     return jsonify({"username": user.username, "message": ["username is deleted"]})
 
 
-@users_api_blueprint.route('/address/<id>', methods=['POST'])
+@users_api_blueprint.route('/address', methods=['POST'])
 @jwt_required
 @csrf.exempt
-def add_address(id):
+def add_address():
+    user_id = User.get_by_id(get_jwt_identity())
     data = request.get_json()
-    user = User.get_by_id(id)
     address_input = data['address']
     country_input = data['country']
     zipcode_input = data['zipcode']
@@ -156,19 +156,20 @@ def add_address(id):
         return jsonify({'message': 'All fields required', 'status': 'failed'}), 400
 
     elif user.update(address=address_input,
-                     country=country_input, zipcode=zipcode_input, updated_at=datetime.datetime.now()).where(User.id == id).execute():
+                     country=country_input, zipcode=zipcode_input, updated_at=datetime.datetime.now()).where(User.id == user_id).execute():
         return jsonify({"message": "Update success"})
 
     else:
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400
 
 
-@users_api_blueprint.route('/username/<id>', methods=['POST'])
+@users_api_blueprint.route('/username', methods=['POST'])
 @jwt_required
 @csrf.exempt
-def edit_username(id):
+def edit_username():
+    user_id = User.get_by_id(get_jwt_identity())
+    user = User.get_or_none(User.id == user_id)
     data = request.get_json()
-    user = User.get_by_id(id)
     username_input = data['username']
 
     username_check = User.get_or_none(User.username == username_input)
@@ -179,18 +180,21 @@ def edit_username(id):
     elif username_check:
         return jsonify({"message": ["username is already in use"], "status": "failed"}), 400
 
-    elif user.update(username=username_input, updated_at=datetime.datetime.now()).where(User.id == id).execute():
+    elif user.update(username=username_input, updated_at=datetime.datetime.now()).where(User.id == user_id).execute():
         return jsonify({"message": "Update success"})
 
     else:
         return jsonify({"message": "Some error happened", "status": "Failed"}), 400
 
 
-@users_api_blueprint.route('/password/<id>', methods=['POST'])
+@users_api_blueprint.route('/password', methods=['POST'])
+@jwt_required
 @csrf.exempt
-def edit_password(id):
+def edit_password():
     data = request.get_json()
-    user = User.get_by_id(id)
+    user_id = User.get_by_id(get_jwt_identity())
+    user = User.get_or_none(User.id == user_id)
+    print(user)
     password_input = data['password']
 
     if password_input == "":
@@ -208,7 +212,7 @@ def edit_password(id):
     elif not has_special(password_input):
         return jsonify({'message': ' Passwords needs at least one special character', 'status': 'failed'}), 400
 
-    elif user.update(password=generate_password_hash(password_input), updated_at=datetime.datetime.now()).where(User.id == id).execute():
+    elif user.update(password=generate_password_hash(password_input), updated_at=datetime.datetime.now()).where(User.id == user_id).execute():
 
         return jsonify({"message": "Update success"})
 
