@@ -16,7 +16,7 @@ items_api_blueprint = Blueprint('items_api',
 @items_api_blueprint.route('/<id>', methods=['GET'])
 def get_one_Item(id):
     item = Item.get_or_none(id=id)
-    return jsonify({"name": item.name, "type": item.product_type,
+    return jsonify({"id": item.id, "name": item.name, "type": item.product_type,
                     "size": item.size, "color": item.color, "price": item.price, "image": item.image, "stock": item.stock, "image_url": item.image_url})
 
 
@@ -41,7 +41,7 @@ def get_distinct():
 def get_all_item():
     items = Item.select()
 
-    return jsonify([{"name": item.name, "type": item.product_type,
+    return jsonify([{"id": item.id"name": item.name, "type": item.product_type,
                      "size": item.size, "color": item.color, "price": item.price, "image": item.image, "stock": item.stock, "image_url": item.image_url} for item in items])
 
 
