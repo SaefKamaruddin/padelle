@@ -48,6 +48,8 @@ def get_by_name():
 
 
 @cart_api_blueprint.route('/user/paid', methods=['GET'])
+@csrf.exempt
+@jwt_required
 def paid_item():
     current_id = User.get_by_id(get_jwt_identity())
     carts = Cart.select().where(Cart.user == current_id, Cart.payment_status == True)
