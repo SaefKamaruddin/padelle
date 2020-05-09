@@ -59,11 +59,21 @@ def my_info():
     print(user.email)
     return jsonify({"id": user.id, "email": user.email, "username": user.username})
 
-###################################################
-###################################################
-###################################################
-###################################################
-# SIGNUP/Login Function
+
+@users_api_blueprint.route('/check_name/<name>', methods=['GET'])
+@csrf.exempt
+def check_name(name):
+    if User.select().where(User.username == name):
+        return jsonify({"username": name, "message": "This username exists"})
+
+    else:
+        return jsonify({"message": "username is available"})
+
+        ###################################################
+        ###################################################
+        ###################################################
+        ###################################################
+        # SIGNUP/Login Function
 
 
 @users_api_blueprint.route('/signup', methods=['POST'])
