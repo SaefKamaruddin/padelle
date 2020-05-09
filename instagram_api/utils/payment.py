@@ -40,7 +40,7 @@ def new_payment():
 @csrf.exempt
 @jwt_required
 def checkout():
-    # current_id = User.get_by_id(get_jwt_identity())
+    current_id = User.get_by_id(get_jwt_identity())
     # not_enough_items = Cart.select().join(Item).where(Cart.user == current_id,
     #                                                   Cart.payment_status == False, Cart.amount > Item.stock)
 
