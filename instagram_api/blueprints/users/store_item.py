@@ -54,7 +54,7 @@ def delete_by_name():
     return jsonify({"name": item.name, "message": ["item is deleted"]})
 
 
-@items_api_blueprint.route('/delete/id', methods=['POST'])
+@items_api_blueprint.route('/delete/<id>', methods=['POST'])
 @csrf.exempt
 def delete_by_id():
     item_id = request.get_json()
