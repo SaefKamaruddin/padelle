@@ -37,9 +37,10 @@ def index():
     return "USERS API"
 
 
-@users_api_blueprint.route('/user/<id>', methods=['GET'])
-def get_one_User(id):
-    user = User.get_or_none(id=id)
+@users_api_blueprint.route('/user', methods=['GET'])
+@jwt_required
+def get_one_User():
+    user = User.get_by_id(get_jwt_identity())
     return jsonify({"username": user.username, "email": user.email, "address": user.address, "zipcode": user.zipcode, "country": user.country, "mail_list": user.mailing_list})
 
 
