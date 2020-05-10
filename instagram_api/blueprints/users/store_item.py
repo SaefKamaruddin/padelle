@@ -48,8 +48,9 @@ def get_all_item():
 @items_api_blueprint.route('/delete/name', methods=['POST'])
 @csrf.exempt
 def delete_by_name():
-    item_name = request.get_json()
-    item = Item.get_or_none(Item.name == item_name['name'])
+    data = request.get_json()
+    item_name = data['name']
+    item = Item.get_or_none(Item.name == item_name)
     item.delete_instance()
     return jsonify({"name": item.name, "message": ["item is deleted"]})
 
