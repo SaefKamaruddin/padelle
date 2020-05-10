@@ -24,7 +24,7 @@ def send_after_signup_success(receiver_email):
         data={"from": "Padelle <mailgun@" + os.environ.get("MAILGUN_DOMAIN") + ">",
               "to": receiver_email,
               "subject": "Sign up",
-              "text": "Welcome"
+              "text": "Sign up"
               })
 
 
