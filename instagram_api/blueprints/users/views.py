@@ -84,11 +84,10 @@ def sign_up():
     username_input = data['username']
     email_input = data['email']
     password_input = data['password']
-    # mail_input = data['mailing_list']
-    # user = User(username=username_input,
-    #             password=password_input, email=email_input, mailing_list=mail_input)
+    mail_input = data['mailing_list']
     user = User(username=username_input,
-                password=password_input, email=email_input)
+                password=password_input, email=email_input, mailing_list=mail_input)
+
     username_check = User.get_or_none(User.username == username_input)
     email_check = User.get_or_none(User.email == email_input)
 
@@ -107,13 +106,13 @@ def sign_up():
         registered_user = User.get(User.username == username_input)
         print(registered_user)
         print(email_input)
-        # print(registered_user.mailing_list)
+        print(registered_user.mailing_list)
         send_after_signup_success(email_input)
 
-        # if registered_user.mailing_list == True:
-        #     print("hello")
-        #     add_list_member(receiver_email=email_input,
-        #                     username=username_input)
+        if registered_user.mailing_list == True:
+            print("hello")
+            add_list_member(receiver_email=email_input,
+                            username=username_input)
 
         return jsonify({"auth_token": access_token, "message": "Successfully created a user and signed in.", "status": "Success", "user": {"id": registered_user.id, "username": registered_user.username, "Admin_status": registered_user.isAdmin, "email": registered_user.email, "mailing_list": registered_user.mailing_list}}), 200
 
