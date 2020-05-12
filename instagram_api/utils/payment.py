@@ -30,10 +30,10 @@ gateway = braintree.BraintreeGateway(
 
 @payment_api_blueprint.route('/new_payment', methods=['GET'])
 @csrf.exempt
-@jwt_required
 def new_payment():
     client_token = gateway.client_token.generate()
-    return jsonify({"client token": client_token})
+    return render_template("payment2.html", token=client_token)
+    # return jsonify({"client token": client_token})
 
 
 @payment_api_blueprint.route('/checkout', methods=['POST'])
@@ -77,12 +77,33 @@ def checkout():
         Cart.update(payment_status=True).where(
             Cart.user == current_id, Cart.payment_status == False).execute()
 
-        print(result.transaction)
-        print(result.transaction.id)
-        print(result.transaction.amount)
-        send_after_payment(current_id.email)
+    print(result.transaction)
+    print(result.transaction.id)
+    print(result.transaction.amount)
+    send_after_payment(current_id.email)
 
-        return jsonify({'message': 'Success', 'Amount Paid': (result.transaction.amount), 'status': 'success'}), 200
+    return jsonify({'message': 'Success', 'status': 'success'}), 200
+
+
+# @payment_api_blueprint.route('/checkout', methods=['POST'])
+# @csrf.exempt
+# def checkout():
+
+#     print(request.form.get('paymentMethodNonce'))
+#     nonce = request.form.get("bt-nonce")
+
+#     result = gateway.transaction.sale({
+#         "amount": "10.00",
+#         "payment_method_nonce": nonce,
+#         "options": {
+#             "submit_for_settlement": True
+#         }
+#     })
+#     print(result.transaction)
+#     print(result.transaction.id)
+#     print(result.transaction.amount)
+
+#     return jsonify({'message': 'Success', 'status': 'success'}), 200
 
 
 @payment_api_blueprint.route('/test', methods=['POST'])
