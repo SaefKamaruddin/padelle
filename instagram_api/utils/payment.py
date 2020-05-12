@@ -58,31 +58,31 @@ def checkout():
                            for item in not_enough_items], "Please reduce amount", {"Status": "Failed"}), 400
 
     else:
-    print(request.form.get('paymentMethodNonce'))
-    data = request.get_json()
-    amount_input = data['amount']
-    pmNonce_input = data['paymentMethod']
+        print(request.form.get('paymentMethodNonce'))
+        data = request.get_json()
+        amount_input = data['amount']
+        pmNonce_input = data['paymentMethod']
 
-    result = gateway.transaction.sale({
-        "amount": amount_input,
-        "payment_method_nonce": pmNonce_input,
-        "options": {
-            "submit_for_settlement": True
-        }
-    })
+        result = gateway.transaction.sale({
+            "amount": amount_input,
+            "payment_method_nonce": pmNonce_input,
+            "options": {
+                "submit_for_settlement": True
+            }
+        })
 
-    Payment(user=current_id, Braintree_Transaction_id=result.transaction.id,
-            Total_amount=result.transaction.amount).save()
+        Payment(user=current_id, Braintree_Transaction_id=result.transaction.id,
+                Total_amount=result.transaction.amount).save()
 
-    Cart.update(payment_status=True).where(
-        Cart.user == current_id, Cart.payment_status == False).execute()
+        Cart.update(payment_status=True).where(
+            Cart.user == current_id, Cart.payment_status == False).execute()
 
-    print(result.transaction)
-    print(result.transaction.id)
-    print(result.transaction.amount)
-    send_after_payment(current_id.email)
+        print(result.transaction)
+        print(result.transaction.id)
+        print(result.transaction.amount)
+        send_after_payment(current_id.email)
 
-    return jsonify({'message': 'Success', 'Amount Paid': (result.transaction.amount), 'status': 'success'}), 200
+        return jsonify({'message': 'Success', 'Amount Paid': (result.transaction.amount), 'status': 'success'}), 200
 
 
 @payment_api_blueprint.route('/test', methods=['POST'])
