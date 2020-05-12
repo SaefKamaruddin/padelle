@@ -41,23 +41,23 @@ def new_payment():
 @jwt_required
 def checkout():
     current_id = User.get_by_id(get_jwt_identity())
-    # not_enough_items = Cart.select().join(Item).where(Cart.user == current_id,
-    #                                                   Cart.payment_status == False, Cart.amount > Item.stock)
+    not_enough_items = Cart.select().join(Item).where(Cart.user == current_id,
+                                                      Cart.payment_status == False, Cart.amount > Item.stock)
 
-    # if len(not_enough_items) > 0:
-    #     return jsonify("Message: There are not enough of these items in stock",
-    #                    [{"item":
-    #                      {"id": item.item.id,
-    #                       "stock": item.item.stock,
-    #                       "color": item.item.color,
-    #                       "name": item.item.name,
-    #                       "product_type": item.item.product_type,
-    #                       "image": item.item.image_url,
-    #                       "price": item.item.price,
-    #                       "size": item.item.size}}
-    #                        for item in not_enough_items], "Please reduce amount", {"Status": "Failed"}), 400
+    if len(not_enough_items) > 0:
+        return jsonify("Message: There are not enough of these items in stock",
+                       [{"item":
+                         {"id": item.item.id,
+                          "stock": item.item.stock,
+                          "color": item.item.color,
+                          "name": item.item.name,
+                          "product_type": item.item.product_type,
+                          "image": item.item.image_url,
+                          "price": item.item.price,
+                          "size": item.item.size}}
+                           for item in not_enough_items], "Please reduce amount", {"Status": "Failed"}), 400
 
-    # else:
+    else:
     print(request.form.get('paymentMethodNonce'))
     data = request.get_json()
     amount_input = data['amount']

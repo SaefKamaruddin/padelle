@@ -1,5 +1,6 @@
 from flask import Blueprint, Flask, jsonify, render_template, request, make_response, redirect
 from models.item import Item
+from models.cart import Cart
 from flask_jwt_extended import (
     jwt_required, create_access_token, get_jwt_identity)
 from instagram_api.utils.helpers import upload_file_to_aws
@@ -61,7 +62,10 @@ def delete_by_id():
     data = request.get_json()
     item_id = data['id']
     item = Item.get_or_none(Item.id == item_id)
-    item.delete_instance()
+
+    cart = Cart.delete().where(Cart.item_id == item_id, Cart.payment_status == False)
+    cart.execute()
+    # item.delete_instance()
     return jsonify({"id": item.id, "message": ["item is deleted"]})
 
 
