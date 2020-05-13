@@ -65,7 +65,7 @@ def delete_by_id():
 
     cart = Cart.delete().where(Cart.item_id == item_id, Cart.payment_status == False)
     cart.execute()
-    # item.delete_instance()
+    item.delete_instance()
     return jsonify({"id": item.id, "message": ["item is deleted"]})
 
 
