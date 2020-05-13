@@ -52,7 +52,7 @@ def delete_by_name():
     data = request.get_json()
     item_name = data['name']
     item = Item.get_or_none(Item.name == item_name)
-    item.delete_instance()
+    item.delete().where(Item.name == item_name).execute()
     return jsonify({"name": item.name, "message": ["item is deleted"]})
 
 
