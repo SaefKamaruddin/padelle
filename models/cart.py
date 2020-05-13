@@ -7,7 +7,7 @@ from models.base_model import BaseModel
 
 class Cart(BaseModel):
     user = pw.ForeignKeyField(User, backref="cart_user")
-    item = pw.ForeignKeyField(Item, backref="cart_item")
+    item = pw.ForeignKeyField(Item, backref="cart_item", null=True)
     payment_status = pw.BooleanField(null=False, default=False)
     payment = pw.ForeignKeyField(Payment, backref="payment", null=True)
     amount = pw.IntegerField(null=False, default=1)
