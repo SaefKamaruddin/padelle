@@ -77,6 +77,14 @@ def checkout():
         Cart.update(payment_status=True).where(
             Cart.user == current_id, Cart.payment_status == False).execute()
 
+        cart_amount = Cart.select(Cart.amount).where(Cart.item_id == Item.id)
+
+        item = (Item.update(stock=Item.stock - cart_amount)
+                .where(Item.id.in_
+                       (Cart.select(Cart.item_id)
+                        .where((Cart.user == current_id) & (Cart.payment_status == False)))))
+    item.execute()
+
     print(result.transaction)
     print(result.transaction.id)
     print(result.transaction.amount)
@@ -111,15 +119,28 @@ def checkout():
 @jwt_required
 def match():
     current_id = User.get_by_id(get_jwt_identity())
-    carts = Cart.select().where(
-        Cart.user == current_id, Cart.payment_status == False)
+    # carts = Cart.select().where(
+    #     Cart.user == current_id, Cart.payment_status == False)
+
+    # Cart.update({Cart.item_id.stock: '20'}).where(Cart.select(Item.id).join(Item).where(
+    #     Cart.user == current_id, Cart.payment_status == False)).execute()
+    # Item.update(stock=20).where(Item.select().join(Cart).where(
+    #     (Cart.user == current_id) & (Cart.payment_status == False))).execute()
+    cart = Cart.select(Cart.amount).where(Cart.item_id == Item.id)
+
+    item = (Item.update(stock=Item.stock - cart)
+            .where(Item.id.in_
+                   (Cart.select(Cart.item_id)
+                    .where((Cart.user == current_id) & (Cart.payment_status == False)))))
+    item.execute()
+    return jsonify({"hello": "hello"})
     # not_enough_items = Cart.select().join(Item).where(Cart.user == current_id,
     #                                                   Cart.payment_status == False, Cart.amount > Item.stock)
 
     # print(len(not_enough_items))
 
-    Cart.update({Cart.item.stock: (Cart.item.stock-Cart.amount)}).where(Cart.user == current_id,
-                                                                        Cart.payment_status == False).execute()  # Execute the query, returning number of rows updated.
+    # Cart.update({Cart.item.stock: (Cart.item.stock-Cart.amount)}).where(Cart.user == current_id,
+    #                                                                     Cart.payment_status == False).execute()  # Execute the query, returning number of rows updated.
 
     # print(([{
     #     "id": cart.user.id,
@@ -137,10 +158,10 @@ def match():
     # cart_afterpay.update(Cart.item.stock == (Cart.item.stock - Cart.amount)
     #                      ).where(Cart.user == cart_afterpay, Cart.payment_status == False).execute()
 
-    return jsonify([{"id": cart.user.id,
-                     "amount": cart.amount,
-                     "item id": cart.item.id,
-                     "stock": cart.item.stock}for cart in carts])
+    # return jsonify([{"id": cart.user.id,
+    #                  "amount": cart.amount,
+    #                  "item id": cart.item.id,
+    #                  "stock": cart.item.stock}for cart in carts])
 
     # return jsonify([{"user": {
     #                 "id": item.user.id,
