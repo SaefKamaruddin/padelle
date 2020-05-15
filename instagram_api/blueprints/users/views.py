@@ -244,3 +244,20 @@ def edit_mailing_list():
     elif current_id.mailing_list == False:
         current_id.update(mailing_list=True).execute()
         return jsonify({"message": "You have been added to the mailing list", "status": "success"}), 200
+
+
+@users_api_blueprint.route('/confirm_password', methods=['POST'])
+@csrf.exempt
+@jwt_required
+def confirm_password():
+    data = request.get_json()
+    password_input = data['password']
+    user = User.get_by_id(get_jwt_identity())
+    hashed_password = user.password
+    result = check_password_hash(hashed_password, password_input)
+
+    if result:
+        return jsonify({"Message": "password is correct"}), 200
+
+    else:
+        return jsonify({"Message": "password is incorrect"}), 400
