@@ -73,6 +73,7 @@ def checkout():
 
         Payment(user=current_id, Braintree_Transaction_id=result.transaction.id,
                 Total_amount=result.transaction.amount).save()
+        cart_amount = Cart.select(Cart.amount).where(Cart.item_id == Item.id)
 
         item = (Item.update(stock=Item.stock - cart_amount)
                 .where(Item.id.in_
@@ -82,8 +83,6 @@ def checkout():
 
         Cart.update(payment_status=True).where(
             Cart.user == current_id, Cart.payment_status == False).execute()
-
-        cart_amount = Cart.select(Cart.amount).where(Cart.item_id == Item.id)
 
     print(result.transaction)
     print(result.transaction.id)

@@ -51,6 +51,11 @@ def get_all_item():
 def delete_by_name():
     data = request.get_json()
     item_name = data['name']
+    name = Item.select().where(Item.name == item_name)
+    cart = Cart.delete().where((Cart.item.in_(name))
+                               & (Cart.payment_status == False))
+
+    cart.execute()
     item = Item.get_or_none(Item.name == item_name)
     item.delete().where(Item.name == item_name).execute()
     return jsonify({"name": item.name, "message": ["item is deleted"]})
@@ -62,7 +67,6 @@ def delete_by_id():
     data = request.get_json()
     item_id = data['id']
     item = Item.get_or_none(Item.id == item_id)
-
     cart = Cart.delete().where(Cart.item_id == item_id, Cart.payment_status == False)
     cart.execute()
     item.delete_instance()
