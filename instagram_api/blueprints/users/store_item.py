@@ -52,10 +52,12 @@ def delete_by_name():
     data = request.get_json()
     item_name = data['name']
     name = Item.select().where(Item.name == item_name)
-    cart = Cart.delete().where((Cart.item.in_(name))
-                               & (Cart.payment_status == False))
-
-    cart.execute()
+    cart_unpaid = Cart.delete().where((Cart.item.in_(name))
+                                      & (Cart.payment_status == False))
+    cart_paid = Cart.update(item_id=None).where((Cart.item.in_(name))
+                                                & (Cart.payment_status == True))
+    cart_paid.execute()
+    cart_unpaid.execute()
     item = Item.get_or_none(Item.name == item_name)
     item.delete().where(Item.name == item_name).execute()
     return jsonify({"name": item.name, "message": ["item is deleted"]})
